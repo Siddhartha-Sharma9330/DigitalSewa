@@ -1,5 +1,5 @@
 import * as React from "react";
-import { FormProvider, useFormContext, Controller } from "react-hook-form";
+import { FormProvider, Controller } from "react-hook-form";
 import { cn } from "@/lib/utils";
 
 interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
@@ -7,7 +7,6 @@ interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
 }
 
 export function Form({ children, ...props }: FormProps) {
-  const methods = useFormContext();
   return (
     <form {...props} className={cn("space-y-6", props.className)}>
       {children}
@@ -15,12 +14,24 @@ export function Form({ children, ...props }: FormProps) {
   );
 }
 
-export function FormProviderWrapper({ children, ...props }: { children: React.ReactNode }) {
+import { useFormContext, FormProvider as RHFFormProvider } from "react-hook-form";
+export function FormProviderWrapper({ children }: { children: React.ReactNode }) {
   const methods = useFormContext();
-  return <FormProvider {...methods}>{children}</FormProvider>;
+  return <RHFFormProvider {...methods}>{children}</RHFFormProvider>;
 }
 
-export function FormField({ name, control, render }: any) {
+import { Control, FieldValues, Path, ControllerRenderProps } from "react-hook-form";
+import { ReactElement } from "react";
+export interface FormFieldProps<T extends FieldValues = FieldValues> {
+  name: Path<T>;
+  control: Control<T>;
+  render: (props: {
+    field: ControllerRenderProps<T, Path<T>>;
+    fieldState: any;
+    formState: any;
+  }) => ReactElement;
+}
+export function FormField<T extends FieldValues = FieldValues>({ name, control, render }: FormFieldProps<T>) {
   return <Controller name={name} control={control} render={render} />;
 }
 
@@ -28,7 +39,11 @@ export function FormItem({ children, className }: { children: React.ReactNode; c
   return <div className={cn("space-y-2", className)}>{children}</div>;
 }
 
-export function FormLabel({ children, className, ...props }: any) {
+export interface FormLabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
+  children: React.ReactNode;
+  className?: string;
+}
+export function FormLabel({ children, className, ...props }: FormLabelProps) {
   return (
     <label className={cn("block text-sm font-medium text-foreground", className)} {...props}>
       {children}
@@ -36,15 +51,27 @@ export function FormLabel({ children, className, ...props }: any) {
   );
 }
 
-export function FormControl({ children, className }: { children: React.ReactNode; className?: string }) {
+export interface FormControlProps {
+  children: React.ReactNode;
+  className?: string;
+}
+export function FormControl({ children, className }: FormControlProps) {
   return <div className={cn("", className)}>{children}</div>;
 }
 
-export function FormDescription({ children, className }: { children: React.ReactNode; className?: string }) {
+export interface FormDescriptionProps {
+  children: React.ReactNode;
+  className?: string;
+}
+export function FormDescription({ children, className }: FormDescriptionProps) {
   return <p className={cn("text-xs text-muted-foreground", className)}>{children}</p>;
 }
 
-export function FormMessage({ children, className }: { children?: React.ReactNode; className?: string }) {
+export interface FormMessageProps {
+  children?: React.ReactNode;
+  className?: string;
+}
+export function FormMessage({ children, className }: FormMessageProps) {
   if (!children) return null;
   return <p className={cn("text-xs text-destructive", className)}>{children}</p>;
 }

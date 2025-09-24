@@ -1,5 +1,5 @@
 import * as React from "react";
-import { FormProvider, Controller } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import { cn } from "@/lib/utils";
 
 interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
@@ -27,8 +27,8 @@ export interface FormFieldProps<T extends FieldValues = FieldValues> {
   control: Control<T>;
   render: (props: {
     field: ControllerRenderProps<T, Path<T>>;
-    fieldState: any;
-    formState: any;
+    fieldState: import("react-hook-form").ControllerFieldState;
+    formState: import("react-hook-form").FormState<T>;
   }) => ReactElement;
 }
 export function FormField<T extends FieldValues = FieldValues>({ name, control, render }: FormFieldProps<T>) {
@@ -64,7 +64,7 @@ export interface FormDescriptionProps {
   className?: string;
 }
 export function FormDescription({ children, className }: FormDescriptionProps) {
-  return <p className={cn("text-xs text-muted-foreground", className)}>{children}</p>;
+  return <p className={cn("text-xs text-black", className)}>{children}</p>;
 }
 
 export interface FormMessageProps {
